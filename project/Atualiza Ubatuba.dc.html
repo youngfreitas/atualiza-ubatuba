@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#dbe6f2;font-family:'Public Sans',system-ui,sans-serif}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{color:var(--blue-strong)}
+  .atu-root{
+    --bg:#eef4fb; --surface:#ffffff; --surface-2:#f4f8fd;
+    --text:#0f2440; --muted:#54677f; --border:#d9e4f1;
+    --blue:#0B5FBF; --blue-strong:#0a4c99; --blue-soft:#e6f0fc;
+    --green:#1E9E5A; --green-strong:#158048; --green-soft:#e6f6ed;
+    --shadow:0 14px 40px rgba(11,52,105,.16);
+    --ring:rgba(11,95,191,.28);
+  }
+  .atu-root[data-theme="dark"]{
+    --bg:#0b1622; --surface:#132538; --surface-2:#0f1f30;
+    --text:#eaf2fb; --muted:#9fb4cd; --border:#274863; --blue:#4c9bee; --blue-strong:#6fb0f2; --blue-soft:#122c46;
+    --green:#34c078; --green-strong:#41d086; --green-soft:#0f2e22;
+    --shadow:0 14px 40px rgba(0,0,0,.45); --ring:rgba(76,155,238,.4);
+  }
+  .atu-scroll::-webkit-scrollbar{width:8px}
+  .atu-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+  input:focus-visible,button:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+  @keyframes atu-pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  @keyframes atu-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes atu-rise{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
+  @keyframes atu-bar{0%{transform:translateX(-100%)}100%{transform:translateX(0)}}
+  @keyframes atu-confetti{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(620px) rotate(540deg);opacity:0}}
+  @keyframes atu-ring{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+  .atu-anim{animation:atu-rise .45s ease both}
+</style>
+</helmet>
+<div class="atu-page" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;background:radial-gradient(circle at 30% 0%,#eaf2fc,#cbdcee 70%)">
+  <div class="atu-root" data-theme="{{ theme }}" ref="{{ setRoot }}" style="width:min(432px,100%);height:min(824px,96vh);background:var(--bg);border-radius:38px;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);position:relative;transition:background .25s">
+
+    <!-- HEADER -->
+    <header style="flex:none;display:flex;align-items:center;gap:11px;padding:15px 18px;background:var(--surface);border-bottom:1px solid var(--border)">
+      <img src="assets/brasao-ubatuba.png" alt="Brasão da Prefeitura de Ubatuba" style="width:34px;height:34px;object-fit:contain"/>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Nunito';font-weight:900;font-size:16px;color:var(--text);line-height:1">Atualiza <span style="color:var(--blue)">Ubatuba</span></div>
+        <div style="font-size:10.5px;color:var(--muted);letter-spacing:.02em;margin-top:2px">Secretaria Municipal de Fazenda</div>
+      </div>
+      <button onClick="{{ toggleDark }}" aria-label="Alternar modo escuro" style="width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--blue-soft)">{{ themeIcon }}</button>
+    </header>
+
+    <!-- STEPPER -->
+    <sc-if value="{{ showStepper }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:none;padding:14px 18px 4px;background:var(--surface);border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+        <span style="font-size:11.5px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em">{{ stepLabel }}</span>
+        <span style="font-size:11.5px;font-weight:600;color:var(--muted)">Etapa {{ stepNum }} de 3</span>
+      </div>
+      <div style="height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--border)">
+        <div style="height:100%;width:{{ progressPct }};background:linear-gradient(90deg,var(--blue),var(--green));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)"></div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- MAIN -->
+    <main class="atu-scroll" style="flex:1;overflow-y:auto;overflow-x:hidden">
+
+      <!-- ============ WELCOME ============ -->
+      <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+      <div class="atu-anim" style="padding:30px 22px 26px;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:100%">
+        <div style="position:relative;margin-top:6px;animation:atu-float 4s ease-in-out infinite">
+          <div style="width:112px;height:112px;border-radius:50%;background:linear-gradient(150deg,var(--blue),var(--blue-strong));display:flex;align-items:center;justify-content:center;box-shadow:0 12px 28px var(--ring)">
+            <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
+              <circle cx="22" cy="26" r="4.4" fill="#fff"/>
+              <circle cx="38" cy="26" r="4.4" fill="#fff"/>
+              <path d="M20 38 Q30 48 40 38" stroke="#fff" stroke-width="4.4" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div style="position:absolute;right:-6px;bottom:-4px;background:var(--green);color:#fff;font-size:16px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid var(--surface)">👋</div>
+        </div>
+        <div style="margin-top:18px;font-family:'Nunito';font-weight:700;font-size:13px;color:var(--green-strong);background:var(--green-soft);padding:6px 14px;border-radius:99px">Olá! Eu sou o {{ mascotName }}, seu guia por aqui</div>
+        <h1 style="font-family:'Nunito';font-weight:900;font-size:30px;line-height:1.12;color:var(--text);margin:16px 0 10px;text-wrap:balance">Atualize seu cadastro em poucos minutos</h1>
+        <p style="font-size:15.5px;line-height:1.5;color:var(--muted);margin:0 0 22px;max-width:300px">Manter seus dados em dia garante que você receba avisos e benefícios da Prefeitura. É rápido e seguro.</p>
+
+        <div style="display:flex;gap:12px;width:100%;margin-bottom:24px">
+          <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px 10px;display:flex;flex-direction:column;align-items:center;gap:5px">
+            <span style="font-size:24px">⏱️</span>
+            <span style="font-family:'Nunito';font-weight:800;font-size:18px;color:var(--text)">{{ minutes }} min</span>
+            <span style="font-size:11.5px;color:var(--muted)">tempo estimado</span>
+          </div>
+          <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px 10px;display:flex;flex-direction:column;align-items:center;gap:5px">
+            <span style="font-size:24px">🔒</span>
+            <span style="font-family:'Nunito';font-weight:800;font-size:18px;color:var(--text)">Seguro</span>
+            <span style="font-size:11.5px;color:var(--muted)">login gov.br</span>
+          </div>
+        </div>
+
+        <div style="flex:1"></div>
+
+        <button onClick="{{ start }}" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:16px;padding:19px;font-family:'Nunito';font-weight:800;font-size:19px;cursor:pointer;box-shadow:0 10px 22px rgba(30,158,90,.34);transition:transform .15s,background .2s" style-hover="background:var(--green-strong);transform:translateY(-2px)" style-active="transform:translateY(0)">Começar agora →</button>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:15px;color:var(--muted);font-size:13px">
+          <span style="display:flex" aria-hidden="true">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--blue);border:2px solid var(--surface)"></span>
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--green);border:2px solid var(--surface);margin-left:-8px"></span>
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--blue-strong);border:2px solid var(--surface);margin-left:-8px"></span>
+          </span>
+          <span>Mais de <strong style="color:var(--text)">{{ social }}</strong> moradores já atualizaram</span>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ============ IDENTIFICAÇÃO ============ -->
+      <sc-if value="{{ isIdent }}" hint-placeholder-val="{{ false }}">
+      <div class="atu-anim" style="padding:26px 22px">
+        <h2 style="font-family:'Nunito';font-weight:900;font-size:24px;color:var(--text);margin:0 0 8px;line-height:1.15">Vamos te identificar</h2>
+        <p style="font-size:15px;color:var(--muted);margin:0 0 22px;line-height:1.45">Entre com o gov.br para buscar seus dados com segurança.</p>
+
+        <button onClick="{{ chooseGovbr }}" style="width:100%;background:var(--blue);color:#fff;border:none;border-radius:15px;padding:18px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;box-shadow:0 8px 20px var(--ring);transition:transform .15s,background .2s" style-hover="background:var(--blue-strong);transform:translateY(-2px)">
+          <span style="font-size:16px;font-weight:700">Entrar com</span>
+          <span style="font-family:'Nunito';font-weight:900;font-size:22px;letter-spacing:-.02em"><span style="color:#f4d000">g</span><span style="color:#2ac16a">o</span><span style="color:#ffffff">v</span><span style="color:#f4d000">.</span><span style="color:#ffffff">br</span></span>
+        </button>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:22px 0">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span style="font-size:12.5px;color:var(--muted);font-weight:600">ou use seus documentos</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+
+        <label for="atu-doc" style="display:block;font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:8px">CPF, CNPJ ou Inscrição Imobiliária</label>
+        <div style="position:relative">
+          <input id="atu-doc" value="{{ doc }}" onInput="{{ onDoc }}" inputmode="numeric" placeholder="000.000.000-00" aria-describedby="atu-doc-help" style="width:100%;padding:16px 46px 16px 16px;font-size:17px;font-family:'Public Sans';border-radius:14px;border:2px solid var(--border);background:var(--surface);color:var(--text)" style-focus="border-color:var(--blue)"/>
+          <sc-if value="{{ docValid }}" hint-placeholder-val="{{ false }}">
+            <span aria-hidden="true" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;animation:atu-pop .3s ease">✓</span>
+          </sc-if>
+        </div>
+        <p id="atu-doc-help" style="font-size:12.5px;color:{{ docHintColor }};margin:9px 2px 0;min-height:16px">{{ docHint }}</p>
+
+        <button onClick="{{ next }}" disabled="{{ docBlocked }}" style="width:100%;margin-top:20px;border:none;border-radius:15px;padding:18px;font-family:'Nunito';font-weight:800;font-size:17px;cursor:pointer;transition:.2s;background:{{ docBtnBg }};color:{{ docBtnColor }}">Validar e continuar</button>
+
+        <div style="display:flex;align-items:center;gap:9px;margin-top:20px;padding:13px;background:var(--blue-soft);border-radius:13px">
+          <span style="font-size:17px">🛡️</span>
+          <span style="font-size:12.5px;color:var(--text);line-height:1.4">Seus dados são protegidos pela LGPD e usados apenas para atualização cadastral.</span>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ============ ATUALIZAÇÃO RÁPIDA ============ -->
+      <sc-if value="{{ isUpdate }}" hint-placeholder-val="{{ false }}">
+      <div class="atu-anim" style="padding:24px 20px 12px">
+        <h2 style="font-family:'Nunito';font-weight:900;font-size:23px;color:var(--text);margin:0 0 6px;line-height:1.15">Confira seus dados</h2>
+        <p style="font-size:14.5px;color:var(--muted);margin:0 0 20px;line-height:1.45">Está tudo certo? Confirme cada item ou toque em <strong style="color:var(--text)">Corrigir</strong>.</p>
+
+        <!-- NOME -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:13px;border-left:4px solid {{ nomeAccent }}">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Nome completo</div>
+              <sc-if value="{{ nomeEditing }}" hint-placeholder-val="{{ false }}">
+                <input value="{{ nome }}" onInput="{{ onNome }}" style="width:100%;margin-top:6px;padding:11px;font-size:15px;border-radius:10px;border:2px solid var(--blue);background:var(--surface-2);color:var(--text)"/>
+              </sc-if>
+              <sc-if value="{{ nomeShow }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:16px;font-weight:600;color:var(--text);margin-top:3px">{{ nome }}</div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:13px">
+            <button onClick="{{ okNome }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ nomeOkBorder }};background:{{ nomeOkBg }};color:{{ nomeOkColor }}">✓ Está certo</button>
+            <button onClick="{{ editNome }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ nomeEditBorder }};background:{{ nomeEditBg }};color:{{ nomeEditColor }}">✎ Corrigir</button>
+          </div>
+        </div>
+
+        <!-- ENDEREÇO -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:13px;border-left:4px solid {{ endAccent }}">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Endereço</div>
+              <sc-if value="{{ endEditing }}" hint-placeholder-val="{{ false }}">
+                <input value="{{ endereco }}" onInput="{{ onEnd }}" style="width:100%;margin-top:6px;padding:11px;font-size:15px;border-radius:10px;border:2px solid var(--blue);background:var(--surface-2);color:var(--text)"/>
+              </sc-if>
+              <sc-if value="{{ endShow }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:16px;font-weight:600;color:var(--text);margin-top:3px">{{ endereco }}</div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:13px">
+            <button onClick="{{ okEnd }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ endOkBorder }};background:{{ endOkBg }};color:{{ endOkColor }}">✓ Está certo</button>
+            <button onClick="{{ editEnd }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ endEditBorder }};background:{{ endEditBg }};color:{{ endEditColor }}">✎ Corrigir</button>
+          </div>
+        </div>
+
+        <!-- TELEFONE -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:13px;border-left:4px solid {{ telAccent }}">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Telefone / Celular</div>
+              <sc-if value="{{ telEditing }}" hint-placeholder-val="{{ false }}">
+                <input value="{{ telefone }}" onInput="{{ onTel }}" inputmode="tel" style="width:100%;margin-top:6px;padding:11px;font-size:15px;border-radius:10px;border:2px solid var(--blue);background:var(--surface-2);color:var(--text)"/>
+              </sc-if>
+              <sc-if value="{{ telShow }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:16px;font-weight:600;color:var(--text);margin-top:3px">{{ telefone }}</div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:13px">
+            <button onClick="{{ okTel }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ telOkBorder }};background:{{ telOkBg }};color:{{ telOkColor }}">✓ Está certo</button>
+            <button onClick="{{ editTel }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ telEditBorder }};background:{{ telEditBg }};color:{{ telEditColor }}">✎ Corrigir</button>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:6px;border-left:4px solid {{ emailAccent }}">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <div style="flex:none;width:40px;height:40px;border-radius:11px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">E-mail</div>
+              <sc-if value="{{ emailEditing }}" hint-placeholder-val="{{ false }}">
+                <input value="{{ email }}" onInput="{{ onEmail }}" inputmode="email" style="width:100%;margin-top:6px;padding:11px;font-size:15px;border-radius:10px;border:2px solid var(--blue);background:var(--surface-2);color:var(--text)"/>
+              </sc-if>
+              <sc-if value="{{ emailShow }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:16px;font-weight:600;color:var(--text);margin-top:3px;word-break:break-all">{{ email }}</div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:13px">
+            <button onClick="{{ okEmail }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ emailOkBorder }};background:{{ emailOkBg }};color:{{ emailOkColor }}">✓ Está certo</button>
+            <button onClick="{{ editEmail }}" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer;transition:.15s;border:2px solid {{ emailEditBorder }};background:{{ emailEditBg }};color:{{ emailEditColor }}">✎ Corrigir</button>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ============ REVISÃO E CONFIRMAÇÃO ============ -->
+      <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+      <div class="atu-anim" style="padding:26px 22px">
+        <h2 style="font-family:'Nunito';font-weight:900;font-size:24px;color:var(--text);margin:0 0 6px;line-height:1.15">Quase lá! Confirme o resumo</h2>
+        <p style="font-size:14.5px;color:var(--muted);margin:0 0 20px;line-height:1.45">Revise as informações antes de enviar.</p>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden">
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border)">
+            <span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>
+            <div style="flex:1;min-width:0"><div style="font-size:11.5px;color:var(--muted);font-weight:600">NOME</div><div style="font-size:15.5px;color:var(--text);font-weight:600">{{ nome }}</div></div>
+            <span style="font-size:11px;font-weight:700;color:{{ nomeTagColor }};background:{{ nomeTagBg }};padding:4px 9px;border-radius:99px">{{ nomeTag }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border)">
+            <span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>
+            <div style="flex:1;min-width:0"><div style="font-size:11.5px;color:var(--muted);font-weight:600">ENDEREÇO</div><div style="font-size:15.5px;color:var(--text);font-weight:600">{{ endereco }}</div></div>
+            <span style="font-size:11px;font-weight:700;color:{{ endTagColor }};background:{{ endTagBg }};padding:4px 9px;border-radius:99px">{{ endTag }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border)">
+            <span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>
+            <div style="flex:1;min-width:0"><div style="font-size:11.5px;color:var(--muted);font-weight:600">TELEFONE</div><div style="font-size:15.5px;color:var(--text);font-weight:600">{{ telefone }}</div></div>
+            <span style="font-size:11px;font-weight:700;color:{{ telTagColor }};background:{{ telTagBg }};padding:4px 9px;border-radius:99px">{{ telTag }}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:15px 16px">
+            <span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px">✓</span>
+            <div style="flex:1;min-width:0"><div style="font-size:11.5px;color:var(--muted);font-weight:600">E-MAIL</div><div style="font-size:15.5px;color:var(--text);font-weight:600;word-break:break-all">{{ email }}</div></div>
+            <span style="font-size:11px;font-weight:700;color:{{ emailTagColor }};background:{{ emailTagBg }};padding:4px 9px;border-radius:99px">{{ emailTag }}</span>
+          </div>
+        </div>
+
+        <button onClick="{{ back }}" style="width:100%;margin-top:16px;background:transparent;border:2px solid var(--border);border-radius:14px;padding:14px;font-weight:700;font-size:14.5px;color:var(--muted);cursor:pointer" style-hover="border-color:var(--blue);color:var(--blue)">← Voltar e editar</button>
+      </div>
+      </sc-if>
+
+      <!-- ============ SUCESSO ============ -->
+      <sc-if value="{{ isSuccess }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;padding:36px 24px 26px;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:100%;overflow:hidden">
+        <div style="position:absolute;inset:0 0 auto 0;height:0;pointer-events:none" aria-hidden="true">
+          <sc-for list="{{ confetti }}" as="c" hint-placeholder-count="0"><span style="{{ c }}"></span></sc-for>
+        </div>
+        <div style="position:relative;margin-top:8px">
+          <span style="position:absolute;inset:0;border-radius:50%;border:3px solid var(--green);animation:atu-ring 1.6s ease-out infinite" aria-hidden="true"></span>
+          <div style="width:110px;height:110px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(30,158,90,.4);animation:atu-pop .55s ease both">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m4 12 5 5L20 6"/></svg>
+          </div>
+        </div>
+        <div style="margin-top:20px;font-size:34px" aria-hidden="true">🎉</div>
+        <h1 style="font-family:'Nunito';font-weight:900;font-size:27px;color:var(--text);margin:6px 0 6px;line-height:1.15">Cadastro atualizado!</h1>
+        <p style="font-size:15px;color:var(--muted);margin:0 0 18px;line-height:1.5;max-width:290px">Obrigado por manter seus dados em dia, <strong style="color:var(--text)">{{ firstName }}</strong>. A Prefeitura de Ubatuba agradece! 💚</p>
+
+        <div style="width:100%;background:var(--green-soft);border:1.5px solid var(--green);border-radius:16px;padding:16px;display:flex;align-items:center;gap:13px;margin-bottom:14px">
+          <div style="flex:none;width:46px;height:46px;border-radius:12px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.6 8 11 4.6-2.4 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4" stroke-width="2.4" stroke-linecap="round"/></svg>
+          </div>
+          <div style="text-align:left"><div style="font-family:'Nunito';font-weight:800;font-size:15px;color:var(--green-strong)">Selo de Cadastro Válido</div><div style="font-size:12.5px;color:var(--muted)">Protocolo {{ protocol }} · {{ today }}</div></div>
+        </div>
+
+        <div style="width:100%;display:flex;gap:10px;margin-bottom:18px">
+          <button style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:14px;padding:15px 8px;font-family:'Nunito';font-weight:800;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.2s" style-hover="background:var(--blue-strong)"><span style="font-size:19px">📄</span>Baixar comprovante</button>
+          <button style="flex:1;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:15px 8px;font-family:'Nunito';font-weight:800;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.2s" style-hover="border-color:var(--blue);color:var(--blue)"><span style="font-size:19px">📤</span>Compartilhar</button>
+        </div>
+
+        <div style="flex:1"></div>
+
+        <div style="width:100%;padding:13px;background:var(--surface);border:1px solid var(--border);border-radius:13px;font-size:13px;color:var(--muted);margin-bottom:14px">Você é o morador nº <strong style="color:var(--green-strong)">{{ socialNext }}</strong> a atualizar o cadastro este ano. 🙌</div>
+        <button onClick="{{ restart }}" style="background:transparent;border:none;color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline">Voltar ao início</button>
+      </div>
+      </sc-if>
+
+    </main>
+
+    <!-- STICKY CTA (update & review) -->
+    <sc-if value="{{ showCta }}" hint-placeholder-val="{{ false }}">
+    <footer style="flex:none;padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--border);display:flex;gap:12px;align-items:center">
+      <button onClick="{{ back }}" aria-label="Voltar" style="flex:none;width:52px;height:52px;border-radius:14px;border:2px solid var(--border);background:var(--surface-2);color:var(--text);font-size:20px;cursor:pointer" style-hover="border-color:var(--blue)">←</button>
+      <button onClick="{{ next }}" disabled="{{ ctaBlocked }}" style="flex:1;border:none;border-radius:14px;padding:17px;font-family:'Nunito';font-weight:800;font-size:17px;cursor:pointer;transition:.2s;background:{{ ctaBg }};color:{{ ctaColor }};box-shadow:{{ ctaShadow }}">{{ ctaLabel }}</button>
+    </footer>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:880},&quot;social&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5320,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Conteúdo&quot;,&quot;min&quot;:0,&quot;max&quot;:999999,&quot;unit&quot;:&quot; moradores&quot;},&quot;minutes&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Conteúdo&quot;,&quot;min&quot;:1,&quot;max&quot;:15,&quot;unit&quot;:&quot; min&quot;},&quot;mascotName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Tuba&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Conteúdo&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#1E9E5A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Aparência&quot;,&quot;options&quot;:[&quot;#1E9E5A&quot;,&quot;#0B5FBF&quot;,&quot;#0E8F8A&quot;,&quot;#E08A00&quot;]}}">
+class Component extends DCLogic {
+  state = {
+    step: 0,
+    dark: false,
+    doc: '',
+    answers: { nome: null, endereco: null, telefone: null, email: null },
+    values: {
+      nome: 'Maria Aparecida dos Santos',
+      endereco: 'Rua das Gaivotas, 128 — Perequê-Açu',
+      telefone: '(12) 99765-4321',
+      email: 'maria.santos@email.com'
+    }
+  };
+
+  componentDidMount() { this.applyProps(); }
+  componentDidUpdate() { this.applyProps(); }
+  applyProps() {
+    if (!this.rootEl) return;
+    const g = this.props.accent;
+    if (g) { this.rootEl.style.setProperty('--green', g); }
+  }
+
+  maskCpf(v) {
+    const d = v.replace(/\D/g, '').slice(0, 11);
+    if (d.length <= 11) {
+      return d
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    return d;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const v = s.values;
+    const a = s.answers;
+    const digits = s.doc.replace(/\D/g, '');
+    const docValid = digits.length === 11;
+    const social = (this.props.social ?? 5320).toLocaleString('pt-BR');
+    const minutes = this.props.minutes ?? 3;
+    const mascotName = this.props.mascotName ?? 'Tuba';
+
+    const answered = ['nome', 'endereco', 'telefone', 'email'].every(k => a[k] !== null);
+
+    // segmented button styling helper
+    const seg = (val, kind) => {
+      const active = a[val ? val : ''] ;
+      return null;
+    };
+    const okStyle = (field) => {
+      const on = a[field] === 'ok';
+      return {
+        border: on ? 'var(--green)' : 'var(--border)',
+        bg: on ? 'var(--green-soft)' : 'var(--surface-2)',
+        color: on ? 'var(--green-strong)' : 'var(--muted)'
+      };
+    };
+    const editStyle = (field) => {
+      const on = a[field] === 'edit';
+      return {
+        border: on ? 'var(--blue)' : 'var(--border)',
+        bg: on ? 'var(--blue-soft)' : 'var(--surface-2)',
+        color: on ? 'var(--blue)' : 'var(--muted)'
+      };
+    };
+    const accent = (field) => a[field] === 'edit' ? 'var(--blue)' : (a[field] === 'ok' ? 'var(--green)' : 'var(--border)');
+    const tag = (field) => {
+      if (a[field] === 'edit') return { t: 'Atualizado', c: 'var(--blue)', bg: 'var(--blue-soft)' };
+      return { t: 'Confirmado', c: 'var(--green-strong)', bg: 'var(--green-soft)' };
+    };
+
+    const setA = (field, val) => () => this.setState(st => ({ answers: { ...st.answers, [field]: val } }));
+    const setV = (field) => (e) => { const val = e.target.value; this.setState(st => ({ values: { ...st.values, [field]: val } })); };
+
+    const no = okStyle('nome'), ne = editStyle('nome');
+    const eo = okStyle('endereco'), ee = editStyle('endereco');
+    const to = okStyle('telefone'), te = editStyle('telefone');
+    const mo = okStyle('email'), me = editStyle('email');
+    const tn = tag('nome'), ten = tag('endereco'), tt = tag('telefone'), tm = tag('email');
+
+    // confetti
+    const colors = ['#0B5FBF', '#1E9E5A', '#f4d000', '#4c9bee', '#34c078'];
+    const confetti = s.step === 4 ? Array.from({ length: 26 }, (_, i) => {
+      const left = Math.round((i * 37 + 11) % 100);
+      const dur = (1.8 + (i % 5) * 0.35).toFixed(2);
+      const delay = ((i % 7) * 0.18).toFixed(2);
+      const size = 7 + (i % 4) * 2;
+      const col = colors[i % colors.length];
+      const rad = i % 2 ? '50%' : '2px';
+      return `position:absolute;top:0;left:${left}%;width:${size}px;height:${size + 3}px;background:${col};border-radius:${rad};animation:atu-confetti ${dur}s linear ${delay}s infinite`;
+    }) : [];
+
+    // CTA (footer) — shown on update(2) & review(3)
+    const showCta = s.step === 2 || s.step === 3;
+    const ctaBlocked = s.step === 2 ? !answered : false;
+    const ctaLabel = s.step === 2 ? (answered ? 'Confirmar e continuar →' : 'Confirme todos os itens') : 'Enviar atualização ✓';
+    const ctaActive = !ctaBlocked;
+
+    const first = (v.nome || '').split(' ')[0] || 'morador';
+    const proto = 'UBA-' + String(2026) + '-' + String(48213);
+
+    return {
+      setRoot: (el) => { this.rootEl = el; },
+      theme: s.dark ? 'dark' : 'light',
+      themeIcon: s.dark ? '☀️' : '🌙',
+      toggleDark: () => this.setState(st => ({ dark: !st.dark })),
+
+      isWelcome: s.step === 0,
+      isIdent: s.step === 1,
+      isUpdate: s.step === 2,
+      isReview: s.step === 3,
+      isSuccess: s.step === 4,
+
+      showStepper: s.step >= 1 && s.step <= 3,
+      stepNum: Math.min(s.step, 3),
+      stepLabel: ['', 'Identificação', 'Seus dados', 'Confirmação'][Math.min(s.step, 3)],
+      progressPct: ['0%', '20%', '62%', '92%', '100%'][s.step],
+
+      social, minutes, mascotName,
+      socialNext: ((this.props.social ?? 5320) + 1).toLocaleString('pt-BR'),
+
+      start: () => this.setState({ step: 1 }),
+      next: () => this.setState(st => ({ step: Math.min(st.step + 1, 4) })),
+      back: () => this.setState(st => ({ step: Math.max(st.step - 1, 0) })),
+      restart: () => this.setState({ step: 0, doc: '', answers: { nome: null, endereco: null, telefone: null, email: null } }),
+      chooseGovbr: () => this.setState({ step: 2 }),
+
+      doc: s.doc,
+      onDoc: (e) => this.setState({ doc: this.maskCpf(e.target.value) }),
+      docValid,
+      docBlocked: !docValid,
+      docHint: docValid ? '✓ Documento válido' : (digits.length > 0 ? 'Continue digitando…' : 'Digite os números do seu documento.'),
+      docHintColor: docValid ? 'var(--green-strong)' : 'var(--muted)',
+      docBtnBg: docValid ? 'var(--green)' : 'var(--border)',
+      docBtnColor: docValid ? '#fff' : 'var(--muted)',
+
+      // field values
+      nome: v.nome, endereco: v.endereco, telefone: v.telefone, email: v.email,
+      onNome: setV('nome'), onEnd: setV('endereco'), onTel: setV('telefone'), onEmail: setV('email'),
+
+      okNome: setA('nome', 'ok'), editNome: setA('nome', 'edit'),
+      okEnd: setA('endereco', 'ok'), editEnd: setA('endereco', 'edit'),
+      okTel: setA('telefone', 'ok'), editTel: setA('telefone', 'edit'),
+      okEmail: setA('email', 'ok'), editEmail: setA('email', 'edit'),
+
+      nomeEditing: a.nome === 'edit', nomeShow: a.nome !== 'edit',
+      endEditing: a.endereco === 'edit', endShow: a.endereco !== 'edit',
+      telEditing: a.telefone === 'edit', telShow: a.telefone !== 'edit',
+      emailEditing: a.email === 'edit', emailShow: a.email !== 'edit',
+
+      nomeAccent: accent('nome'), endAccent: accent('endereco'), telAccent: accent('telefone'), emailAccent: accent('email'),
+
+      nomeOkBorder: no.border, nomeOkBg: no.bg, nomeOkColor: no.color,
+      nomeEditBorder: ne.border, nomeEditBg: ne.bg, nomeEditColor: ne.color,
+      endOkBorder: eo.border, endOkBg: eo.bg, endOkColor: eo.color,
+      endEditBorder: ee.border, endEditBg: ee.bg, endEditColor: ee.color,
+      telOkBorder: to.border, telOkBg: to.bg, telOkColor: to.color,
+      telEditBorder: te.border, telEditBg: te.bg, telEditColor: te.color,
+      emailOkBorder: mo.border, emailOkBg: mo.bg, emailOkColor: mo.color,
+      emailEditBorder: me.border, emailEditBg: me.bg, emailEditColor: me.color,
+
+      nomeTag: tn.t, nomeTagColor: tn.c, nomeTagBg: tn.bg,
+      endTag: ten.t, endTagColor: ten.c, endTagBg: ten.bg,
+      telTag: tt.t, telTagColor: tt.c, telTagBg: tt.bg,
+      emailTag: tm.t, emailTagColor: tm.c, emailTagBg: tm.bg,
+
+      confetti,
+      firstName: first,
+      protocol: proto,
+      today: new Date().toLocaleDateString('pt-BR'),
+
+      showCta, ctaBlocked,
+      ctaLabel,
+      ctaBg: ctaActive ? 'var(--green)' : 'var(--border)',
+      ctaColor: ctaActive ? '#fff' : 'var(--muted)',
+      ctaShadow: ctaActive ? '0 8px 20px rgba(30,158,90,.32)' : 'none'
+    };
+  }
+}
+</script>
+</body>
+</html>
