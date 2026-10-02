@@ -1,3 +1,5 @@
+import mascote from '../assets/caicarinha.webp';
+
 interface WelcomeProps {
   mascotName: string;
   minutes: number;
@@ -61,17 +63,17 @@ export function Welcome({ mascotName, minutes, social, onStart }: WelcomeProps) 
             height: 112,
             borderRadius: '50%',
             background: 'linear-gradient(150deg,var(--blue),var(--blue-strong))',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            overflow: 'hidden',
             boxShadow: '0 12px 28px var(--ring)',
           }}
         >
-          <svg width="60" height="60" viewBox="0 0 60 60" aria-hidden="true">
-            <circle cx="22" cy="26" r="4.4" fill="#fff" />
-            <circle cx="38" cy="26" r="4.4" fill="#fff" />
-            <path d="M20 38 Q30 48 40 38" stroke="#fff" strokeWidth="4.4" fill="none" strokeLinecap="round" />
-          </svg>
+          <img
+            src={mascote}
+            alt={mascotName}
+            width={112}
+            height={112}
+            style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
+          />
         </div>
         <div
           style={{
