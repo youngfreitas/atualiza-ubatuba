@@ -1,0 +1,155 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #dbe6f2;
+  font-family: 'Public Sans', system-ui, sans-serif;
+}
+
+.atu-root {
+  --bg: #eef4fb;
+  --surface: #ffffff;
+  --surface-2: #f4f8fd;
+  --text: #0f2440;
+  --muted: #54677f;
+  --border: #d9e4f1;
+  --blue: #0b5fbf;
+  --blue-strong: #0a4c99;
+  --blue-soft: #e6f0fc;
+  --green: #1e9e5a;
+  --green-strong: #158048;
+  --green-soft: #e6f6ed;
+  --shadow: 0 14px 40px rgba(11, 52, 105, 0.16);
+  --ring: rgba(11, 95, 191, 0.28);
+}
+
+.atu-root[data-theme='dark'] {
+  --bg: #0b1622;
+  --surface: #132538;
+  --surface-2: #0f1f30;
+  --text: #eaf2fb;
+  --muted: #9fb4cd;
+  --border: #274863;
+  --blue: #4c9bee;
+  --blue-strong: #6fb0f2;
+  --blue-soft: #122c46;
+  --green: #34c078;
+  --green-strong: #41d086;
+  --green-soft: #0f2e22;
+  --shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  --ring: rgba(76, 155, 238, 0.4);
+}
+
+.atu-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.atu-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@keyframes atu-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes atu-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes atu-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes atu-confetti {
+  0% {
+    transform: translateY(-20px) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(620px) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+@keyframes atu-ring {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.atu-anim {
+  animation: atu-rise 0.45s ease both;
+}
+
+/* Estados de hover, active e focus */
+.atu-theme-toggle:hover {
+  background: var(--blue-soft);
+}
+.atu-cta-primary:hover {
+  background: var(--green-strong);
+  transform: translateY(-2px);
+}
+.atu-cta-primary:active {
+  transform: translateY(0);
+}
+.atu-govbr-btn:hover {
+  background: var(--blue-strong);
+  transform: translateY(-2px);
+}
+.atu-doc-input:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+.atu-review-back:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.atu-btn-download:hover {
+  background: var(--blue-strong);
+}
+.atu-btn-share:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.atu-footer-back:hover {
+  border-color: var(--blue);
+}
+.atu-field-input:focus {
+  outline: none;
+}
